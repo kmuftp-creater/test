@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式碼預覽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        #error-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; background: #fef2f2; color: #991b1b; padding: 20px; z-index: 9999; border-bottom: 4px solid #ef4444; font-family: monospace; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div id="error-overlay">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:bold; font-size:1.125rem;">⚠️ 程式碼執行發生錯誤：</div>
+        <div id="error-msg" style="white-space:pre-wrap; font-size:0.875rem; word-break:break-all;"></div>
+        <div style="margin-top:12px; font-size:0.75rem; opacity:0.8;">提示：請檢查貼上的程式碼是否缺少括號，或使用了未定義的變數。</div>
+    </div>
+    <script>
+        window.addEventListener('error', function(e) {
+            document.getElementById('error-overlay').style.display = 'block';
+            document.getElementById('error-msg').innerText = e.message + '\n(行數: ' + e.lineno + ', 欄位: ' + e.colno + ')';
+        });
+    </script>
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+const { useState, useMemo } = React;
+
+// --- i18n 多國語言設定 ---
+const translations = {
+  zh: {
+    appTitle: '原始碼守護者',
+    appSubtitle: '100% 語法安全 HTML/JS 即時混淆工具',
+    inputLabel: '1. 貼上您的原始碼',
+    outputLabel: '2. 取得受保護的程式碼',
+    inputPlaceholder: '在此輸入 HTML 或 JavaScript 程式碼...\n(自動保護所有的 < 符號與 // 註解，絕不破壞您的邏輯)',
+    outputPlaceholder: '處理後的加密程式碼將顯示於此...',
+    modeHtml: 'HTML 模式',
+    modeJs: 'JS 模式',
+    clearBtn: '清除內容',
+    copyBtn: '複製代碼',
+    copiedMsg: '已複製！',
+    themeToggle: '切換主題',
+    langToggle: 'EN',
+    emptyWarning: '請先輸入程式碼',
+  },
+  en: {
+    appTitle: 'Source Code Protector Pro',
+    appSubtitle: '100% Syntax Safe HTML/JS Obfuscator',
+    inputLabel: '1. Paste Source Code',
+    outputLabel: '2. Get Protected Code',
+    inputPlaceholder: 'Type or paste HTML / JavaScript code here...',
+    outputPlaceholder: 'Protected code will appear here...',
+    modeHtml: 'HTML Mode',
+    modeJs: 'JS Mode',
+    clearBtn: 'Clear',
+    copyBtn: 'Copy Code',
+    copiedMsg: 'Copied!',
+    themeToggle: 'Toggle Theme',
+    langToggle: '中文',
+    emptyWarning: 'Please enter code first',
+  }
+};
+
+// --- SVG 圖示組件 ---
+const Icons = {
+  Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  Sun: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
+  Moon: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+  Globe: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
+  Copy: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  Trash: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
+  Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  Code: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+};
+
+function App() {
+  const [sourceCode, setSourceCode] = useState('');
+  const [mode, setMode] = useState('js'); // 預設改為 JS 模式，方便您直接貼上
+  const [theme, setTheme] = useState('dark'); 
+  const [lang, setLang] = useState('zh'); 
+  const [copied, setCopied] = useState(false);
+
+  const t = translations[lang];
+
+  // --- 核心邏輯：絕對安全的編碼 ---
+  const processedCode = useMemo(() => {
+    if (!sourceCode.trim()) return '';
+    try {
+      let processCode = sourceCode;
+
+      if (mode === 'html') {
+        // HTML 模式：移除強硬的換行刪除，保證內嵌的 JS // 註解不會壞掉
+        processCode = processCode.trim();
+        const encoded = btoa(unescape(encodeURIComponent(processCode)));
+        return `<script>(function(){var s=document.createElement('script');s.textContent=decodeURIComponent(escape(atob("ZG9jdW1lbnQud3JpdGUoZGVjb2RlVVJJQ29tcG9uZW50KGVzY2FwZShhdG9iKCIke2VuY29kZWR9IikpKSk7PFwvc2NyaXB0PmA7CiAgICAgIH0gZWxzZSB7CiAgICAgICAgLy8gSlMg5qih5byP77ya56e76Zmk5Y+v6IO96Kqk6LK855qEICDmqJnnsaTvvIznhLblvozljp/msYHljp/lkbPljIXoo50KICAgICAgICBwcm9jZXNzQ29kZSA9IHByb2Nlc3NDb2RlLnJlcGxhY2UoLzxcLz9zY3JpcHRbXj5dKj4vZ2ksICcnKS50cmltKCk7CiAgICAgICAgY29uc3QgZW5jb2RlZCA9IGJ0b2EodW5lc2NhcGUoZW5jb2RlVVJJQ29tcG9uZW50KHByb2Nlc3NDb2RlKSkpOwogICAgICAgIAogICAgICAgIC8vIOe1gualteS/ruW+qe+8muS9v+eUqCAudGV4dENvbnRlbnQg6ICM6Z2eIC5pbm5lckhUTUzvvIEKICAgICAgICAvLyDkv53orYkgYDwgMjBgIOmAmeeorumBi+eul+WtkOS4jeacg+iiq+eAj+imveWZqOeVtuaIkCBIVE1MIOaomeexpOaIquaWt++8gQogICAgICAgIHJldHVybiBgKGZ1bmN0aW9uKCl7dmFyIHM9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnc2NyaXB0Jyk7cy50ZXh0Q29udGVudD1kZWNvZGVVUklDb21wb25lbnQoZXNjYXBlKGF0b2IoIiR7ZW5jb2RlZH0iKSkpO2RvY3VtZW50LmhlYWQuYXBwZW5kQ2hpbGQocyk7fSkoKTtgOwogICAgICB9CiAgICB9IGNhdGNoIChlcnJvcikgewogICAgICByZXR1cm4gYC8vIOiZleeQhumMr+iqpO+8muiri+aqouafpeWOn+Wni+eivOagvOW8j+aYr+WQpuato+eiulxuLy8gRXJyb3I6ICR7ZXJyb3IubWVzc2FnZX1gOwogICAgfQogIH0sIFtzb3VyY2VDb2RlLCBtb2RlXSk7CgogIC8vIC0tLSDkupLli5Xkuovku7bomZXnkIYgLS0tCiAgY29uc3QgaGFuZGxlQ29weSA9IGFzeW5jICgpID0+IHsKICAgIGlmICghcHJvY2Vzc2VkQ29kZSkgcmV0dXJuOwogICAgdHJ5IHsKICAgICAgYXdhaXQgbmF2aWdhdG9yLmNsaXBib2FyZC53cml0ZVRleHQocHJvY2Vzc2VkQ29kZSk7CiAgICAgIHNldENvcGllZCh0cnVlKTsKICAgICAgc2V0VGltZW91dCgoKSA9PiBzZXRDb3BpZWQoZmFsc2UpLCAyMDAwKTsgCiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgY29uc3QgdGV4dEFyZWEgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJ0ZXh0YXJlYSIpOwogICAgICB0ZXh0QXJlYS52YWx1ZSA9IHByb2Nlc3NlZENvZGU7CiAgICAgIGRvY3VtZW50LmJvZHkuYXBwZW5kQ2hpbGQodGV4dEFyZWEpOwogICAgICB0ZXh0QXJlYS5zZWxlY3QoKTsKICAgICAgdHJ5IHsKICAgICAgICBkb2N1bWVudC5leGVjQ29tbWFuZCgnY29weScpOwogICAgICAgIHNldENvcGllZCh0cnVlKTsKICAgICAgICBzZXRUaW1lb3V0KCgpID0+IHNldENvcGllZChmYWxzZSksIDIwMDApOwogICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgY29uc29sZS5lcnJvcigi6KSH6KO95aSx5pWXIiwgZSk7CiAgICAgIH0KICAgICAgZG9jdW1lbnQuYm9keS5yZW1vdmVDaGlsZCh0ZXh0QXJlYSk7CiAgICB9CiAgfTsKCiAgY29uc3QgaGFuZGxlQ2xlYXIgPSAoKSA9PiB7CiAgICBzZXRTb3VyY2VDb2RlKCcnKTsKICAgIHNldENvcGllZChmYWxzZSk7CiAgfTsKCiAgY29uc3QgdG9nZ2xlVGhlbWUgPSAoKSA9PiBzZXRUaGVtZShwcmV2ID0+IHByZXYgPT09ICdsaWdodCcgPyAnZGFyaycgOiAnbGlnaHQnKTsKICBjb25zdCB0b2dnbGVMYW5nID0gKCkgPT4gc2V0TGFuZyhwcmV2ID0+IHByZXYgPT09ICd6aCcgPyAnZW4nIDogJ3poJyk7CgogIGNvbnN0IHRoZW1lQ2xhc3NlcyA9IHRoZW1lID09PSAnZGFyaycgPyAnYmctZ3JheS05MDAgdGV4dC1ncmF5LTEwMCcgOiAnYmctc2xhdGUtNTAgdGV4dC1ncmF5LTgwMCc7CiAgY29uc3QgY2FyZENsYXNzZXMgPSB0aGVtZSA9PT0gJ2RhcmsnID8gJ2JnLWdyYXktODAwIGJvcmRlci1ncmF5LTcwMCBzaGFkb3cteGwnIDogJ2JnLXdoaXRlIGJvcmRlci1ncmF5LTIwMCBzaGFkb3ctbGcnOwogIGNvbnN0IHRleHRBcmVhQ2xhc3NlcyA9IHRoZW1lID09PSAnZGFyaycgPyAnYmctZ3JheS05MDAgYm9yZGVyLWdyYXktNjAwIHRleHQtZ3JheS0xMDAgZm9jdXM6Ym9yZGVyLVsjNEE5MEUyXScgOiAnYmctc2xhdGUtNTAgYm9yZGVyLWdyYXktMzAwIHRleHQtZ3JheS04MDAgZm9jdXM6Ym9yZGVyLVsjNEE5MEUyXSc7CgogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT17YG1pbi1oLXNjcmVlbiBmb250LXNhbnMgdHJhbnNpdGlvbi1jb2xvcnMgZHVyYXRpb24tMzAwICR7dGhlbWVDbGFzc2VzfSBwLTQgbWQ6cC04IGZsZXggZmxleC1jb2wgaXRlbXMtY2VudGVyYH0+CiAgICAgIDxoZWFkZXIgY2xhc3NOYW1lPSJ3LWZ1bGwgbWF4LXctNnhsIGZsZXggZmxleC1jb2wgbWQ6ZmxleC1yb3cganVzdGlmeS1iZXR3ZWVuIGl0ZW1zLWNlbnRlciBtYi04IGdhcC00Ij4KICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTMiPgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9InAtMiBiZy1bIzRBOTBFMl0gYmctb3BhY2l0eS0xMCByb3VuZGVkLWxnIHRleHQtWyM0QTkwRTJdIj4KICAgICAgICAgICAgPEljb25zLlNoaWVsZCAvPgogICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8ZGl2PgogICAgICAgICAgICA8aDEgY2xhc3NOYW1lPSJ0ZXh0LTJ4bCBmb250LWJvbGQgdHJhY2tpbmctdGlnaHQiPnt0LmFwcFRpdGxlfTwvaDE+CiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT17YHRleHQtc20gJHt0aGVtZSA9PT0gJ2RhcmsnID8gJ3RleHQtZ3JheS00MDAnIDogJ3RleHQtZ3JheS01MDAnfWB9PgogICAgICAgICAgICAgIHt0LmFwcFN1YnRpdGxlfQogICAgICAgICAgICA8L3A+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICA8L2Rpdj4KCiAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0zIj4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgZmxleCBwLTEgcm91bmRlZC1sZyAke3RoZW1lID09PSAnZGFyaycgPyAnYmctZ3JheS04MDAnIDogJ2JnLWdyYXktMjAwJ31gfT4KICAgICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRNb2RlKCdodG1sJyl9IGNsYXNzTmFtZT17YHB4LTQgcHktMS41IHRleHQtc20gZm9udC1tZWRpdW0gcm91bmRlZC1tZCB0cmFuc2l0aW9uLWFsbCAke21vZGUgPT09ICdodG1sJyA/ICdiZy1bIzRBOTBFMl0gdGV4dC13aGl0ZSBzaGFkb3cnIDogJ3RleHQtZ3JheS01MDAgaG92ZXI6dGV4dC1ncmF5LTQwMCd9YH0+e3QubW9kZUh0bWx9PC9idXR0b24+CiAgICAgICAgICAgIDxidXR0b24gb25DbGljaz17KCkgPT4gc2V0TW9kZSgnanMnKX0gY2xhc3NOYW1lPXtgcHgtNCBweS0xLjUgdGV4dC1zbSBmb250LW1lZGl1bSByb3VuZGVkLW1kIHRyYW5zaXRpb24tYWxsICR7bW9kZSA9PT0gJ2pzJyA/ICdiZy1bIzlCNkVGM10gdGV4dC13aGl0ZSBzaGFkb3cnIDogJ3RleHQtZ3JheS01MDAgaG92ZXI6dGV4dC1ncmF5LTQwMCd9YH0+e3QubW9kZUpzfTwvYnV0dG9uPgogICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iaC02IHctcHggYmctZ3JheS00MDAgb3BhY2l0eS0zMCBteC0yIj48L2Rpdj4KICAgICAgICAgIDxidXR0b24gb25DbGljaz17dG9nZ2xlTGFuZ30gY2xhc3NOYW1lPXtgcC0yIHJvdW5kZWQtZnVsbCB0cmFuc2l0aW9uLWNvbG9ycyAke3RoZW1lID09PSAnZGFyaycgPyAnaG92ZXI6YmctZ3JheS04MDAnIDogJ2hvdmVyOmJnLWdyYXktMjAwJ31gfSB0aXRsZT17dC5sYW5nVG9nZ2xlfT48SWNvbnMuR2xvYmUgLz48L2J1dHRvbj4KICAgICAgICAgIDxidXR0b24gb25DbGljaz17dG9nZ2xlVGhlbWV9IGNsYXNzTmFtZT17YHAtMiByb3VuZGVkLWZ1bGwgdHJhbnNpdGlvbi1jb2xvcnMgJHt0aGVtZSA9PT0gJ2RhcmsnID8gJ2hvdmVyOmJnLWdyYXktODAwIHRleHQteWVsbG93LTQwMCcgOiAnaG92ZXI6YmctZ3JheS0yMDAgdGV4dC1ncmF5LTYwMCd9YH0gdGl0bGU9e3QudGhlbWVUb2dnbGV9Pnt0aGVtZSA9PT0gJ2RhcmsnID8gPEljb25zLlN1biAvPiA6IDxJY29ucy5Nb29uIC8+fTwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgICA8L2hlYWRlcj4KCiAgICAgIDxtYWluIGNsYXNzTmFtZT0idy1mdWxsIG1heC13LTZ4bCBncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0yIGdhcC02IGZsZXgtZ3JvdyI+CiAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BmbGV4IGZsZXgtY29sIGJvcmRlciByb3VuZGVkLXhsIG92ZXJmbG93LWhpZGRlbiAke2NhcmRDbGFzc2VzfWB9PgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BweC00IHB5LTMgYm9yZGVyLWIgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuICR7dGhlbWUgPT09ICdkYXJrJyA/ICdib3JkZXItZ3JheS03MDAgYmctZ3JheS04MDAnIDogJ2JvcmRlci1ncmF5LTIwMCBiZy1ncmF5LTUwJ31gfT4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0yIGZvbnQtbWVkaXVtIj48SWNvbnMuQ29kZSAvPiB7dC5pbnB1dExhYmVsfTwvZGl2PgogICAgICAgICAgICA8YnV0dG9uIG9uQ2xpY2s9e2hhbmRsZUNsZWFyfSBkaXNhYmxlZD17IXNvdXJjZUNvZGV9IGNsYXNzTmFtZT17YHRleHQtc20gZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTEgcHgtMiBweS0xIHJvdW5kZWQgdHJhbnNpdGlvbi1jb2xvcnMgJHshc291cmNlQ29kZSA/ICdvcGFjaXR5LTUwIGN1cnNvci1ub3QtYWxsb3dlZCcgOiAnaG92ZXI6YmctcmVkLTUwMCBob3ZlcjpiZy1vcGFjaXR5LTEwIHRleHQtcmVkLTQwMCd9YH0+PEljb25zLlRyYXNoIC8+IHt0LmNsZWFyQnRufTwvYnV0dG9uPgogICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleC1ncm93IHAtNCByZWxhdGl2ZSI+CiAgICAgICAgICAgIDx0ZXh0YXJlYSBjbGFzc05hbWU9e2B3LWZ1bGwgaC1mdWxsIG1pbi1oLVs0MDBweF0gcC00IHJvdW5kZWQtbGcgb3V0bGluZS1ub25lIHJlc2l6ZS1ub25lIGZvbnQtbW9ubyB0ZXh0LXNtIGJvcmRlciB0cmFuc2l0aW9uLWNvbG9ycyAke3RleHRBcmVhQ2xhc3Nlc31gfSBwbGFjZWhvbGRlcj17dC5pbnB1dFBsYWNlaG9sZGVyfSB2YWx1ZT17c291cmNlQ29kZX0gb25DaGFuZ2U9eyhlKSA9PiBzZXRTb3VyY2VDb2RlKGUudGFyZ2V0LnZhbHVlKX0gc3BlbGxDaGVjaz0iZmFsc2UiIC8+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICA8L2Rpdj4KCiAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BmbGV4IGZsZXgtY29sIGJvcmRlciByb3VuZGVkLXhsIG92ZXJmbG93LWhpZGRlbiAke2NhcmRDbGFzc2VzfWB9PgogICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BweC00IHB5LTMgYm9yZGVyLWIgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuICR7dGhlbWUgPT09ICdkYXJrJyA/ICdib3JkZXItZ3JheS03MDAgYmctZ3JheS04MDAnIDogJ2JvcmRlci1ncmF5LTIwMCBiZy1ncmF5LTUwJ31gfT4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0yIGZvbnQtbWVkaXVtIHRleHQtWyM1QUM4QTVdIj48SWNvbnMuU2hpZWxkIC8+IHt0Lm91dHB1dExhYmVsfTwvZGl2PgogICAgICAgICAgICA8YnV0dG9uIG9uQ2xpY2s9e2hhbmRsZUNvcHl9IGRpc2FibGVkPXshcHJvY2Vzc2VkQ29kZX0gY2xhc3NOYW1lPXtgdGV4dC1zbSBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMSBweC0zIHB5LTEgcm91bmRlZC1tZCBmb250LW1lZGl1bSB0cmFuc2l0aW9uLWFsbCAkeyFwcm9jZXNzZWRDb2RlID8gJ29wYWNpdHktNTAgY3Vyc29yLW5vdC1hbGxvd2VkIGJnLWdyYXktNTAwIGJnLW9wYWNpdHktMTAgdGV4dC1ncmF5LTQwMCcgOiBjb3BpZWQgPyAnYmctWyM1QUM4QTVdIHRleHQtd2hpdGUgc2hhZG93LW1kJyA6ICdiZy1bIzRBOTBFMl0gdGV4dC13aGl0ZSBzaGFkb3cgaG92ZXI6YmctYmx1ZS02MDAnfWB9PgogICAgICAgICAgICAgIHtjb3BpZWQgPyA8PjxJY29ucy5DaGVjayAvPiB7dC5jb3BpZWRNc2d9PC8+IDogPD48SWNvbnMuQ29weSAvPiB7dC5jb3B5QnRufTwvPn0KICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4LWdyb3cgcC00IHJlbGF0aXZlIj4KICAgICAgICAgICAgIDx0ZXh0YXJlYSByZWFkT25seSBjbGFzc05hbWU9e2B3LWZ1bGwgaC1mdWxsIG1pbi1oLVs0MDBweF0gcC00IHJvdW5kZWQtbGcgb3V0bGluZS1ub25lIHJlc2l6ZS1ub25lIGZvbnQtbW9ubyB0ZXh0LXNtIGJvcmRlciB0cmFuc2l0aW9uLWNvbG9ycyBvcGFjaXR5LTkwICR7dGV4dEFyZWFDbGFzc2VzfWB9IHBsYWNlaG9sZGVyPXt0Lm91dHB1dFBsYWNlaG9sZGVyfSB2YWx1ZT17cHJvY2Vzc2VkQ29kZX0gLz4KICAgICAgICAgICAgeyFwcm9jZXNzZWRDb2RlICYmICgKICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iYWJzb2x1dGUgaW5zZXQtMCBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBwb2ludGVyLWV2ZW50cy1ub25lIj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT17YHB4LTQgcHktMiByb3VuZGVkLWZ1bGwgYm9yZGVyIGJvcmRlci1kYXNoZWQgJHt0aGVtZSA9PT0gJ2RhcmsnID8gJ2JvcmRlci1ncmF5LTYwMCB0ZXh0LWdyYXktNTAwJyA6ICdib3JkZXItZ3JheS0zMDAgdGV4dC1ncmF5LTQwMCd9YH0+e3QuZW1wdHlXYXJuaW5nfTwvc3Bhbj4KICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgKX0KICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgICA8L21haW4+CgogICAgICA8Zm9vdGVyIGNsYXNzTmFtZT0idy1mdWxsIG1heC13LTZ4bCBtdC04IHRleHQtY2VudGVyIHRleHQtc20gb3BhY2l0eS01MCBob3ZlcjpvcGFjaXR5LTgwIHRyYW5zaXRpb24tb3BhY2l0eSI+CiAgICAgICAgPHA+CiAgICAgICAgICB2MC4yLjAgfCAmY29weTsyMDI2IDxhIGhyZWY9Imh0dHBzOi8vaHVvYmVzdC5jb20vIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciBub3JlZmVycmVyIiBjbGFzc05hbWU9ImhvdmVyOnRleHQtWyM0QTkwRTJdIGhvdmVyOnVuZGVybGluZSB0cmFuc2l0aW9uLWNvbG9ycyI+6ZyN5a6256eB5aG+PC9hPgogICAgICAgIDwvcD4KICAgICAgPC9mb290ZXI+CiAgICA8L2Rpdj4KICApOwp9CgovLyAtLS0g6Ieq5YuV5o6b6LyJ6Kit5a6aIC0tLQpjb25zdCByb290ID0gUmVhY3RET00uY3JlYXRlUm9vdChkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgncm9vdCcpKTsKcm9vdC5yZW5kZXIoPEFwcCAvPik7")));document.head.appendChild(s);})();
+    </script>
+</body>
+</html>
