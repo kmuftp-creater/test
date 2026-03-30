@@ -1,24 +1,33 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI 零程式速成架站課 - 不用寫程式，講人話就能讓網站上線。專為非技術人員打造，從痛點診斷到實戰部署，4 階段學會 AI 自動化架站。">
     <title>AI 零程式速成架站課 | 不用寫程式，講人話就能讓網站上線</title>
-    <meta name="description" content="陳小明資深 AI 應用顧問帶領，專為設計師、行銷人員、創業者打造。不用寫程式，講人話就能讓網站上線。課程時間：2026/04/12。立即報名享受早鳥優惠！">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
     <style>
-        /* === 核心變數 & 基礎樣式 === */
+        /* =========================================
+           CSS Variables & Reset
+        ========================================= */
         :root {
-            --primary: #2c3e50; /* 炭黑 */
-            --dark: #1a252f;
-            --secondary: #95a5a6; /* 暖灰 */
-            --light: #f1f4f6; /* 極淡灰 */
-            --accent: #e67e22; /* 金棕色 */
-            --accent-hover: #cf711f;
-            --text-on-dark: #ecf0f1;
-            --text-on-light: #2c3e50;
-            --font-main: 'PingFang TC', 'Heiti TC', 'Noto Sans CJK TC', 'Microsoft JhengHei', sans-serif;
-            --transition: all 0.3s ease;
+            --color-charcoal: #1A1A1A;
+            --color-charcoal-light: #2A2A2A;
+            --color-warm-gray: #F5F5F0;
+            --color-warm-gray-dark: #E8E8E2;
+            --color-gold: #C5A059;
+            --color-gold-hover: #DDB871;
+            --color-white: #FFFFFF;
+            
+            --font-main: 'Inter', 'Noto Sans TC', sans-serif;
+            
+            --transition-fast: 0.3s ease;
+            --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -29,718 +38,773 @@
 
         body {
             font-family: var(--font-main);
-            color: var(--text-on-light);
-            background-color: #ffffff;
+            color: var(--color-charcoal);
+            background-color: var(--color-warm-gray);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* === 全域重複元件 === */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
-        section {
-            padding: 80px 0;
+        ul {
+            list-style: none;
         }
 
-        h1, h2, h3 {
+        /* =========================================
+           Typography
+        ========================================= */
+        h1, h2, h3, h4 {
             font-weight: 700;
+            line-height: 1.3;
         }
 
         h2 {
             font-size: 2.5rem;
-            color: var(--primary);
+            margin-bottom: 3rem;
             text-align: center;
-            margin-bottom: 50px;
-            position: relative;
+            color: var(--color-charcoal);
         }
 
-        h2::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background-color: var(--accent);
-            margin: 15px auto 0;
+        .section-subtitle {
+            text-align: center;
+            color: var(--color-gold);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
-        .cta-btn {
+        /* =========================================
+           Layout & Components
+        ========================================= */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 6rem 0;
+        }
+
+        /* 按鈕設計 */
+        .btn {
             display: inline-block;
-            background-color: var(--accent);
-            color: #ffffff;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 5px;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-fast);
             border: none;
+            text-align: center;
         }
 
-        .cta-btn:hover {
-            background-color: var(--accent-hover);
-            transform: scale(1.05);
+        .btn-primary {
+            background-color: var(--color-gold);
+            color: var(--color-white);
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
         }
 
-        /* === 捲動出現動畫 CSS === */
+        .btn-primary:hover {
+            background-color: var(--color-gold-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--color-gold);
+            color: var(--color-gold);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--color-gold);
+            color: var(--color-white);
+        }
+
+        /* 動畫 Class */
         .reveal {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transform: translateY(40px);
+            transition: var(--transition-slow);
         }
 
-        .reveal.show {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* === Header === */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #ffffff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        /* === Hero Section === */
+        /* =========================================
+           Hero Section (Dark & Glassmorphism)
+        ========================================= */
         .hero {
-            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
-            color: var(--text-on-dark);
-            height: 100vh;
+            background-color: var(--color-charcoal);
+            background-image: radial-gradient(circle at top right, #2c2c2c, var(--color-charcoal));
+            color: var(--color-white);
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            text-align: center;
             position: relative;
-            padding-top: 100px; /* Header space */
+            padding-top: 4rem;
         }
 
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23fff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-            opacity: 0.5;
+            top: 20%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(197, 160, 89, 0.15);
+            filter: blur(80px);
+            border-radius: 50%;
         }
 
         .hero-content {
+            text-align: center;
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 4rem;
-            line-height: 1.2;
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
         }
 
-        .hero p {
+        .hero .slogan {
             font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            font-weight: 300;
         }
 
-        .hero .meta {
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            color: #bdc3c7;
-        }
-
-        /* === Pain Points Section === */
-        .pain-points {
-            background-color: var(--light);
-        }
-
-        .points-container {
+        .hero-meta {
             display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
             justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
         }
 
-        .point-card {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            flex: 1 1 calc(33.333% - 20px);
-            min-width: 280px;
-            transition: var(--transition);
-            border-left: 5px solid transparent;
+        .meta-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* =========================================
+           Pain Points Section
+        ========================================= */
+        .pain-points {
+            background-color: var(--color-warm-gray);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pain-card {
+            background: var(--color-white);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: var(--transition-fast);
             position: relative;
+            overflow: hidden;
         }
 
-        .point-card:hover {
+        .pain-card:hover {
             transform: translateY(-10px);
-            border-left: 5px solid var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
         }
 
-        .point-number {
-            font-size: 3rem;
+        .pain-number {
+            font-size: 4rem;
             font-weight: 900;
-            color: rgba(230, 126, 34, 0.1);
+            color: var(--color-warm-gray-dark);
             position: absolute;
-            top: 10px;
+            top: -10px;
             right: 20px;
+            line-height: 1;
+            z-index: 1;
         }
 
-        .point-card h3 {
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-top: 10px;
-        }
-
-        /* === Syllabus Section (Timeline) === */
-        .syllabus {
+        .pain-card p {
             position: relative;
+            z-index: 2;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--color-charcoal);
+            margin-top: 1rem;
+        }
+
+        /* =========================================
+           Interactive Tool Section (Vibe Coding)
+        ========================================= */
+        .interactive-section {
+            background-color: var(--color-charcoal);
+            color: var(--color-white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 4rem 3rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+
+        .interactive-container h2 {
+            color: var(--color-white);
+            margin-bottom: 1rem;
+        }
+
+        .interactive-container p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
+        }
+
+        .generator-result {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-gold);
+            transition: var(--transition-fast);
+        }
+
+        .generator-result.loading {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        /* =========================================
+           Syllabus Timeline Section
+        ========================================= */
+        .syllabus {
+            background-color: var(--color-white);
         }
 
         .timeline {
+            position: relative;
             max-width: 800px;
             margin: 0 auto;
-            position: relative;
+            padding: 2rem 0;
         }
 
         .timeline::before {
             content: '';
             position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             top: 0;
-            left: 50px;
-            height: 100%;
-            width: 4px;
-            background-color: var(--primary);
+            bottom: 0;
+            width: 2px;
+            background-color: var(--color-warm-gray-dark);
         }
 
         .timeline-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 50px;
             position: relative;
+            margin-bottom: 4rem;
+            width: 50%;
+            padding-right: 3rem;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: auto;
+            padding-right: 0;
+            padding-left: 3rem;
         }
 
         .timeline-dot {
+            position: absolute;
+            right: -10px;
+            top: 0;
             width: 20px;
             height: 20px;
-            background-color: var(--accent);
-            border: 4px solid var(--primary);
             border-radius: 50%;
-            position: absolute;
-            left: 42px;
-            top: 5px;
-            z-index: 10;
+            background-color: var(--color-gold);
+            border: 4px solid var(--color-white);
+            z-index: 2;
         }
 
-        .timeline-card {
-            margin-left: 100px;
-            background-color: #ffffff;
-            padding: 20px 30px;
-            border-radius: 8px;
-            border: 1px solid rgba(0,0,0,0.05);
-            width: 100%;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+            right: auto;
         }
 
-        .timeline-card h3 {
-            font-size: 1.1rem;
-            color: var(--accent);
-            text-transform: uppercase;
+        .timeline-content {
+            background: var(--color-warm-gray);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: var(--transition-fast);
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .stage-label {
+            color: var(--color-gold);
+            font-weight: 700;
+            font-size: 0.9rem;
             letter-spacing: 1px;
-            margin-bottom: 5px;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
-        .timeline-card h4 {
-            font-size: 1.4rem;
-            color: var(--primary);
+        .timeline-content h3 {
+            font-size: 1.3rem;
         }
 
-        /* === Instructor Section === */
+        /* =========================================
+           Instructor Section
+        ========================================= */
         .instructor {
-            background-color: var(--dark);
-            color: var(--text-on-dark);
-        }
-
-        .instructor h2 {
-            color: var(--text-on-dark);
+            background-color: var(--color-warm-gray);
         }
 
         .instructor-card {
             display: flex;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 50px;
-            border-radius: 15px;
-            gap: 40px;
+            gap: 4rem;
+            background: var(--color-white);
+            padding: 4rem;
+            border-radius: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.04);
         }
 
         .instructor-img {
-            width: 180px;
-            height: 180px;
+            flex-shrink: 0;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
-            border: 5px solid var(--accent);
-            object-fit: cover;
-            /* Placeholder for image */
-            background-color: #95a5a6;
+            background-color: var(--color-warm-gray-dark);
+            position: relative;
+            overflow: hidden;
+            border: 5px solid var(--color-white);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 4rem;
-            color: #fff;
+            justify-content: center;
+            color: var(--color-charcoal-light);
+            font-size: 0.9rem;
         }
 
         .instructor-info h3 {
             font-size: 2rem;
-            color: #ffffff;
+            margin-bottom: 0.5rem;
         }
 
-        .instructor-info .title {
-            color: var(--accent);
-            font-size: 1.2rem;
+        .instructor-title {
+            color: var(--color-gold);
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
 
-        .instructor-info p {
-            font-size: 1.1rem;
-            color: #bdc3c7;
-        }
-
-        /* === Interactive Tool (Vibe Coding) === */
-        .vibe-tool {
-            background-color: #ffffff;
-            text-align: center;
-        }
-
-        .vibe-card {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: var(--light);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        }
-
-        .vibe-output {
-            font-size: 1.4rem;
+        .instructor-highlight {
+            background: var(--color-warm-gray);
+            padding: 1rem 1.5rem;
+            border-left: 4px solid var(--color-gold);
+            border-radius: 0 8px 8px 0;
             font-weight: 500;
-            color: var(--dark);
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            min-height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 30px 0;
-            border: 2px solid rgba(0,0,0,0.05);
         }
 
-        #gen-vibe-btn {
-            background-color: var(--dark);
-            color: #ffffff;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-
-        #gen-vibe-btn:hover {
-            background-color: #000;
-        }
-
-        /* === Register / Pricing Section === */
+        /* =========================================
+           Pricing Section
+        ========================================= */
         .pricing {
-            background-color: var(--light);
+            background-color: var(--color-white);
         }
 
-        .pricing-container {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            align-items: flex-end; /* Align to the bottom of cards */
-            flex-wrap: wrap;
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            align-items: center;
         }
 
         .pricing-card {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            flex: 1 1 calc(33.333% - 20px);
-            min-width: 280px;
+            background: var(--color-warm-gray);
+            padding: 3rem 2rem;
+            border-radius: 16px;
             text-align: center;
-            transition: var(--transition);
-            border-top: 5px solid transparent;
-        }
-
-        .pricing-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        .pricing-card.popular {
-            border-top: 5px solid var(--accent);
-            transform: scale(1.05);
-            z-index: 2;
-        }
-        
-        .pricing-card.popular:hover {
-            transform: scale(1.08);
-        }
-
-        .pricing-card.popular .popular-badge {
-            background-color: var(--accent);
-            color: #fff;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .pricing-card.popular {
+            transition: var(--transition-fast);
             position: relative;
         }
 
-        .price-name {
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .pricing-card:hover {
+            transform: translateY(-10px);
         }
 
-        .price-value {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 25px;
-        }
-
-        .price-features {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 30px;
-            font-size: 0.95rem;
-        }
-
-        .price-features li {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .price-features li::before {
-            content: '✓';
-            color: var(--accent);
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        .register-link {
-            display: inline-block;
-            background-color: var(--primary);
-            color: #ffffff;
-            padding: 10px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: var(--transition);
-        }
-
-        .pricing-card.popular .register-link {
-            background-color: var(--accent);
-        }
-
-        .register-link:hover {
+        .pricing-card.featured {
+            background: var(--color-charcoal);
+            color: var(--color-white);
             transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(197, 160, 89, 0.3);
         }
 
-        /* === Footer === */
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .ticket-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: inherit;
+        }
+
+        .pricing-card.featured .ticket-name {
+            color: var(--color-gold);
+        }
+
+        .ticket-price {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-price span {
+            font-size: 1.2rem;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .ticket-desc {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 2rem;
+            min-height: 24px;
+        }
+
+        /* =========================================
+           Footer
+        ========================================= */
         footer {
-            background-color: var(--dark);
-            color: var(--secondary);
+            background-color: var(--color-charcoal);
+            color: rgba(255,255,255,0.5);
             text-align: center;
-            padding: 40px 0;
+            padding: 2rem 0;
             font-size: 0.9rem;
         }
 
-        /* === 響應式設計 (RWD) === */
-        @media (max-width: 992px) {
-            h2 { font-size: 2.2rem; }
-            .hero h1 { font-size: 3rem; }
-            .instructor-card { flex-direction: column; text-align: center; padding: 40px; }
-            .instructor-info { width: 100%; }
-        }
-
+        /* =========================================
+           Responsive Design (RWD)
+        ========================================= */
         @media (max-width: 768px) {
-            h2 { font-size: 2rem; }
-            .nav-links { display: none; } /* Could add a mobile menu later, hiding for simplicity */
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1.2rem; }
-            .points-container, .pricing-container { flex-direction: column; gap: 20px; align-items: stretch;}
-            .point-card, .pricing-card { flex: 1 1 100%; width: 100%; margin: 0;}
-            .pricing-card.popular { order: -1; transform: none; }
-            .pricing-card.popular:hover { transform: translateY(-5px); }
-            .timeline::before { left: 20px; }
-            .timeline-dot { left: 12px; }
-            .timeline-card { margin-left: 50px; }
+            h2 {
+                font-size: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .timeline::before {
+                left: 0;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 2rem !important;
+                padding-right: 0 !important;
+            }
+
+            .timeline-dot {
+                left: -10px !important;
+            }
+
+            .instructor-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .instructor-highlight {
+                border-left: none;
+                border-top: 4px solid var(--color-gold);
+                border-radius: 0 0 8px 8px;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="container">
-            <nav>
-                <a href="#" class="logo">AI <span>FastBuild</span></a>
-                <ul class="nav-links">
-                    <li><a href="#pain-points">痛點診斷</a></li>
-                    <li><a href="#syllabus">課程大綱</a></li>
-                    <li><a href="#instructor">講師</a></li>
-                    <li><a href="#vibe-tool">AI 靈感</a></li>
-                    <li><a href="#pricing">方案價格</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
+    <!-- 1. Hero Section -->
     <section class="hero">
         <div class="container hero-content reveal">
             <h1>AI 零程式速成架站課</h1>
-            <p>不用寫程式，講人話就能讓網站上線</p>
-            <div class="meta">
-                <p>2026/04/12 13:00 - 17:00 | 台北市市中心 / 線上 Zoom</p>
+            <p class="slogan">不用寫程式，講人話就能讓網站上線</p>
+            
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    2026/04/12 13:00 - 17:00
+                </div>
+                <div class="meta-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    台北市市中心 / 線上 Zoom
+                </div>
             </div>
-            <a href="#pricing" class="cta-btn">立即報名</a>
+
+            <a href="#pricing" class="btn btn-primary">立即報名搶早鳥</a>
         </div>
     </section>
 
-    <section id="pain-points" class="pain-points">
+    <!-- 2. Pain Points Section -->
+    <section class="pain-points">
         <div class="container">
-            <h2 class="reveal">你的架站痛點，我們都懂</h2>
-            <div class="points-container">
-                <div class="point-card reveal">
-                    <span class="point-number">01</span>
-                    <h3>想做網站，但看到程式碼就頭痛</h3>
+            <div class="section-subtitle reveal">Problems</div>
+            <h2 class="reveal">你是否也面臨這些困擾？</h2>
+            
+            <div class="cards-grid">
+                <div class="pain-card reveal" style="transition-delay: 0.1s;">
+                    <div class="pain-number">01</div>
+                    <p>想做網站，但一看到密密麻麻的程式碼就頭痛，無從下手。</p>
                 </div>
-                <div class="point-card reveal">
-                    <span class="point-number">02</span>
-                    <h3>外包網頁報價動輒數萬，修改還要等工程師</h3>
+                <div class="pain-card reveal" style="transition-delay: 0.2s;">
+                    <div class="pain-number">02</div>
+                    <p>外包網頁報價動輒數萬，後續想要微調修改，還要看工程師時間。</p>
                 </div>
-                <div class="point-card reveal">
-                    <span class="point-number">03</span>
-                    <h3>學了 AI，卻不知道怎麼在商務流程落地</h3>
+                <div class="pain-card reveal" style="transition-delay: 0.3s;">
+                    <div class="pain-number">03</div>
+                    <p>學了一堆 AI 工具，卻不知道怎麼將它們實際落地應用在商務流程中。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="syllabus" class="syllabus">
+    <!-- Interactive Tool Section -->
+    <section class="interactive-section">
         <div class="container">
-            <h2 class="reveal">課程大綱：四階段速成</h2>
+            <div class="interactive-container reveal">
+                <div class="section-subtitle" style="color: var(--color-white); opacity: 0.7;">Vibe Coding Experience</div>
+                <h2>AI 架站靈感產生器</h2>
+                <p>不知道能做什麼？點擊下方按鈕，看看 AI 能為不同領域創造什麼專屬網站！</p>
+                
+                <div class="generator-result" id="idea-result">
+                    點擊按鈕獲取靈感 ✨
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateIdea()">產生全新靈感</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Syllabus Section -->
+    <section class="syllabus">
+        <div class="container">
+            <div class="section-subtitle reveal">Syllabus</div>
+            <h2 class="reveal">4 階段，從零到一自動化上線</h2>
+            
             <div class="timeline">
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="stage-label">Phase 01</span>
+                        <h3>觀念建立與環境設定</h3>
+                        <p style="margin-top: 0.5rem; color: #666;">了解 AI 協作邏輯，設定開發環境，打破對程式語言的恐懼。</p>
+                    </div>
+                </div>
                 
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <h3>階段 01</h3>
-                        <h4>觀念建立與環境設定</h4>
+                    <div class="timeline-content">
+                        <span class="stage-label">Phase 02</span>
+                        <h3>將靈感轉譯為指令</h3>
+                        <p style="margin-top: 0.5rem; color: #666;">學習如何精準對話（Prompt Engineering），讓 AI 完美理解你的商業需求。</p>
                     </div>
                 </div>
-
+                
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <h3>階段 02</h3>
-                        <h4>將靈感轉譯為指令</h4>
+                    <div class="timeline-content">
+                        <span class="stage-label">Phase 03</span>
+                        <h3>實戰生成與一鍵部署</h3>
+                        <p style="margin-top: 0.5rem; color: #666;">實戰演練：運用 AI 生成完整網頁結構、樣式，並完成雲端部署上線。</p>
                     </div>
                 </div>
-
+                
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <h3>階段 03</h3>
-                        <h4>實戰生成與一鍵部署</h4>
+                    <div class="timeline-content">
+                        <span class="stage-label">Phase 04</span>
+                        <h3>優化、交付與行銷整合</h3>
+                        <p style="margin-top: 0.5rem; color: #666;">針對 SEO 與效能進行優化，並整合自動化行銷工具，打造高轉換率系統。</p>
                     </div>
                 </div>
-
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <h3>階段 04</h3>
-                        <h4>優化、交付與行銷整合</h4>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
 
-    <section id="instructor" class="instructor">
+    <!-- 4. Instructor Section -->
+    <section class="instructor">
         <div class="container">
-            <h2 class="reveal">遇見你的導師</h2>
+            <div class="section-subtitle reveal">Instructor</div>
+            <h2 class="reveal">帶領你跨越技術門檻的導師</h2>
+            
             <div class="instructor-card reveal">
-                <div class="instructor-img">肖</div>
+                <div class="instructor-img">
+                    <!-- 預留講師圖片位址，此處以文字佔位符呈現高級感 -->
+                    <span style="text-align: center; line-height: 1.4;"><br>Photo</span>
+                </div>
                 <div class="instructor-info">
                     <h3>陳小明</h3>
-                    <p class="title">資深 AI 應用顧問</p>
-                    <p>核心亮點：輔導超過 100 位學員建立自動化流程。擅長將複雜技術轉化為直觀應用，幫助學員利用 AI 工具極大化工作效率與商業價值。</p>
+                    <div class="instructor-title">資深 AI 應用顧問</div>
+                    <p style="margin-bottom: 1.5rem; color: #555;">擁有超過 10 年的 Web 開發與數位行銷經驗，致力於將複雜的技術轉化為一般人也能駕馭的自動化工具。</p>
+                    <div class="instructor-highlight">
+                        ✨ 核心亮點：輔導超過 100 位學員建立自動化流程，成功讓無數非技術背景創業者實現數位轉型。
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="vibe-tool" class="vibe-tool">
+    <!-- 5. Pricing Section -->
+    <section class="pricing" id="pricing">
         <div class="container">
-            <h2 class="reveal">AI 架站靈感產生器</h2>
-            <div class="vibe-card reveal">
-                <p>點擊下方按鈕，隨機獲得你的「目標對象 + 工具類型」組合！</p>
-                <div id="vibe-output" class="vibe-output">準備好獲得靈感了嗎？</div>
-                <button id="gen-vibe-btn">一鍵生成 Vibe</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="pricing" class="pricing">
-        <div class="container">
-            <h2 class="reveal">選擇你的方案，開啟 AI 架站之旅</h2>
-            <div class="pricing-container">
+            <div class="section-subtitle reveal">Pricing</div>
+            <h2 class="reveal">選擇適合你的方案</h2>
+            
+            <div class="pricing-grid">
+                <!-- 一般票 -->
+                <div class="pricing-card reveal" style="transition-delay: 0.1s;">
+                    <div class="ticket-name">一般票</div>
+                    <div class="ticket-price"><span>NT$</span> 4,800</div>
+                    <div class="ticket-desc">原價報名，適合隨時準備出發的你</div>
+                    <a href="#" class="btn btn-outline" style="width: 100%; display: block;">立即報名</a>
+                </div>
                 
-                <div class="pricing-card popular reveal">
-                    <span class="popular-badge">限時最優惠</span>
-                    <h3 class="price-name">早鳥票</h3>
-                    <p class="price-value">NT$ 3,200</p>
-                    <ul class="price-features">
-                        <li>完整 4 小時實戰課程</li>
-                        <li>課程講義與資源包</li>
-                        <li>課後 30 天社群諮詢</li>
-                        <li><b>截止日期前報名有效</b></li>
-                    </ul>
-                    <a href="#" class="register-link">立即搶購</a>
+                <!-- 早鳥票 (Featured) -->
+                <div class="pricing-card featured reveal" style="transition-delay: 0.2s;">
+                    <div class="ticket-name" style="color: var(--color-gold);">🔥 早鳥票 (限時優惠)</div>
+                    <div class="ticket-price"><span>NT$</span> 3,200</div>
+                    <div class="ticket-desc">截止日期前報名，現省 1,600 元</div>
+                    <a href="#" class="btn btn-primary" style="width: 100%; display: block;">搶先保留名額</a>
                 </div>
-
-                <div class="pricing-card reveal">
-                    <h3 class="price-name">一般票</h3>
-                    <p class="price-value">NT$ 4,800</p>
-                    <ul class="price-features">
-                        <li>完整 4 小時實戰課程</li>
-                        <li>課程講義與資源包</li>
-                        <li>課後 30 天社群諮詢</li>
-                    </ul>
-                    <a href="#" class="register-link">立即報名</a>
+                
+                <!-- 團報票 -->
+                <div class="pricing-card reveal" style="transition-delay: 0.3s;">
+                    <div class="ticket-name">三人團報票</div>
+                    <div class="ticket-price"><span>NT$</span> 8,800</div>
+                    <div class="ticket-desc">平均每人只要 2,933 元，最划算</div>
+                    <a href="#" class="btn btn-outline" style="width: 100%; display: block;">發起揪團</a>
                 </div>
-
-                <div class="pricing-card reveal">
-                    <h3 class="price-name">團報票</h3>
-                    <p class="price-value">NT$ 8,800</p>
-                    <ul class="price-features">
-                        <li>三人同行優惠</li>
-                        <li>包含 3 份早鳥票權益</li>
-                        <li>加碼 1 小時專屬諮詢</li>
-                    </ul>
-                    <a href="#" class="register-link">三人開團</a>
-                </div>
-
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 AI FastBuild Course. All rights reserved.</p>
-            <p>活動地點：台北市市中心 / 線上 Zoom | 聯繫信箱：contact@aifastbuild.dev</p>
+            <p>&copy; 2026 AI 零程式速成架站課. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- JavaScript 互動與動畫邏輯 -->
     <script>
-        // === 捲動出現動畫 (Scroll Reveal) ===
-        const revealElements = document.querySelectorAll('.reveal');
-
-        const scrollReveal = function() {
-            for(let i = 0; i < revealElements.length; i++) {
-                const windowHeight = window.innerHeight;
-                const elementTop = revealElements[i].getBoundingClientRect().top;
-                const elementVisible = 150; // Offset
+        // --- 1. 捲動顯示動畫 (Scroll Reveal) ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100; // 進入視窗多少距離觸發
 
                 if (elementTop < windowHeight - elementVisible) {
-                    revealElements[i].classList.add('show');
-                } else {
-                    // revealElements[i].classList.remove('show'); // 如果需要離開時也消失，取消註解
+                    reveals[i].classList.add("active");
                 }
             }
         }
+        window.addEventListener("scroll", reveal);
+        reveal(); // 頁面載入時觸發一次
 
-        window.addEventListener('scroll', scrollReveal);
-        window.addEventListener('load', scrollReveal); // 初始化檢查
+        // --- 2. 互動小工具：AI 架站靈感產生器 ---
+        const audiences = [
+            "個人品牌經營者", "實體店面老闆", "自由工作者 (Freelancer)", 
+            "知識型網紅", "中小企業行銷", "電商新創團隊", "活動企劃人員"
+        ];
+        
+        const tools = [
+            "自動化預約排程網站", "高轉換一頁式銷售頁", "沉浸式作品集展示網", 
+            "會員專屬線上課程平台", "多語系企業形象官網", "自動化客服引導系統", "數據追蹤微型電商"
+        ];
 
-        // === 互動工具：AI 靈感產生器 ===
-        const targets = ['設計師', '行銷人員', '創業者', '接案者', '品牌顧問', '個人部落客', '中小企業主'];
-        const tools = ['個人作品集', '電子商務網站', '行銷活動頁 (Landing Page)', '部落格與內容平台', '內部工具界面', '預約服務網站'];
+        function generateIdea() {
+            const resultBox = document.getElementById('idea-result');
+            
+            // 加上 Loading 動畫視覺
+            resultBox.classList.add('loading');
+            resultBox.innerText = "AI 思考中...";
 
-        const vibeOutput = document.getElementById('vibe-output');
-        const genBtn = document.getElementById('gen-vibe-btn');
-
-        function getRandomItem(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
+            setTimeout(() => {
+                const randomAudience = audiences[Math.floor(Math.random() * audiences.length)];
+                const randomTool = tools[Math.floor(Math.random() * tools.length)];
+                
+                resultBox.innerText = `為「${randomAudience}」打造專屬的「${randomTool}」`;
+                resultBox.classList.remove('loading');
+            }, 600); // 模擬生成延遲 0.6 秒
         }
 
-        genBtn.addEventListener('click', function() {
-            const randomTarget = getRandomItem(targets);
-            const randomTool = getRandomItem(tools);
-            
-            // 添加簡單的淡入淡出效果
-            vibeOutput.style.opacity = 0;
-            setTimeout(() => {
-                vibeOutput.innerHTML = `為 <b>${randomTarget}</b> 製作一個 <b>${randomTool}</b>`;
-                vibeOutput.style.opacity = 1;
-                vibeOutput.style.transition = 'opacity 0.3s ease';
-            }, 300);
+        // --- 3. 平滑捲動 (Smooth Scroll) ---
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                
+                // 檢查是否為空連結，避免 querySelector('#') 報錯
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
         });
     </script>
 </body>
